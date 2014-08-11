@@ -326,13 +326,7 @@ CacheObj.prototype.write = function (clobber) {
                           createInstance(Components.interfaces.nsIScriptableUnicodeConverter);
                       conv.charset = itsalltext.getCharset();
 
-                      if (this.node.getAttribute("role") == "textbox") {
-                          text = this.node.innerHTML;
-                          text = conv.ConvertFromUnicode(this.node.innerHTML);
-                          text = text.replace(/<br\s*\/?>/ig, "\n");
-                      } else {
-                          text = conv.ConvertFromUnicode(this.node.value);
-                      }
+                      text = conv.ConvertFromUnicode(this.node.type=="textarea" ? this.node.value : this.node.innerHTML);
                       foStream.write(text, text.length);
                       foStream.close();
 
@@ -583,8 +577,10 @@ CacheObj.prototype.update = function () {
         value = this.read();
         if (value !== null) {
             this.fade(20, 100);
-            this.node.value = value;
-            this.node.innerHTML = value.replace(/\n/g,'<br/>');;
+            if (this.node.type=="textarea") 
+                this.node.value = value;
+            else
+                this.node.innerHTML = value;
 
             var event = document.createEvent("HTMLEvents");
             event.initEvent('change', true, false);
